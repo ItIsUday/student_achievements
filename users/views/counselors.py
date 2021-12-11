@@ -1,5 +1,6 @@
 from django.contrib.auth import login
 from django.shortcuts import redirect
+from django.urls import reverse
 from django.views.generic import CreateView
 
 from users.forms import CounselorSignUpForm
@@ -18,4 +19,4 @@ class CounselorSignUpView(CreateView):
     def form_valid(self, form):
         user = form.save()
         login(self.request, user)
-        return redirect(redirect("index"))
+        return redirect(reverse("index"))
