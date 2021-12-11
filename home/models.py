@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Organization(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
+    id = models.CharField(max_length=10, primary_key=True, unique=True)
     name = models.CharField(max_length=255)
     type = models.CharField(max_length=25)
 
@@ -11,7 +11,7 @@ class Organization(models.Model):
 
 
 class Achievement(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
+    id = models.CharField(max_length=10, primary_key=True, unique=True)
     title = models.CharField(max_length=255)
     achievement_date = models.DateField()
     academic_year = models.PositiveSmallIntegerField()
