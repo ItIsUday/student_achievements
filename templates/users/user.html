@@ -1,11 +1,17 @@
 {% extends "users/layout.html" %}
 
-{% block body %}
+{% block body %} 
     <h1>Welcome, {{ request.user.first_name }}</h1>
     <ul>
         <li>Username: {{ request.user.username }}</li>
         <li>Email: {{ request.user.email }}</li>
+        <li>User-type: {{ usr }}</li>
     </ul>
 
-    <a href="{% url 'logout' %}">Log Out</a>
+    {% if request.user.is_student %}
+        <a href={% url 'index' %}>View Your Achievements</a>
+    {% else %}
+        <a href={% url 'signup' %}>View All Achievements</a>
+    {% endif %}
+
 {% endblock %}

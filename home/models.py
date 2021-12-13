@@ -14,6 +14,7 @@ class Achievement(models.Model):
     id = models.CharField(max_length=10, primary_key=True, unique=True)
     title = models.CharField(max_length=255)
     achievement_date = models.DateField()
+    type = models.CharField(max_length=30, null=True)
     academic_year = models.PositiveSmallIntegerField()
     certificate = models.FileField()
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
