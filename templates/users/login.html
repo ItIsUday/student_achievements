@@ -1,13 +1,19 @@
 {% extends "users/layout.html" %}
 
 {% block body %}
-    {% if message %}
-        <div>{{ message }}</div>
-    {% endif %}
+    <div class="grid-item">
+        <h2>LOGIN</h2> 
+        {% if message %}
+            <div>{{ message }}</div>
+        {% endif %}
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Submit">
-    </form>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Submit">
+        </form><br><br>
+
+        <p>Don't have an account? </p>
+        <a href={% url 'signup' %}>Sign Up</a>
+    </div>
 {% endblock %}

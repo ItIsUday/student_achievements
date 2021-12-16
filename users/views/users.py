@@ -4,6 +4,8 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic import TemplateView, FormView
+from users.models import Counselor, Student, User
+from home.models import Achievement
 
 
 class SignUpView(TemplateView):
@@ -13,12 +15,50 @@ class SignUpView(TemplateView):
 def index(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse("login"))
-    return render(request, "users/user.html")
+    
+    obj=User.objects.get(username=request.user.username)
+    if obj.is_student:
+        usrtype='Student'
+        stud=Student.objects.get(user=obj)
+        ach=stud.achievements.all()
+        context={
+            'name':obj.first_name+" "+obj.last_name,
+            'USN':stud.usn,
+            'coun_name':stud.counselor.id,
+            'usr':usrtype,
+            'ach':ach
+        }
+        return render(request,"users/studentview.html",context)
+
+    elif obj.is_counselor:
+        usrtype='Counselor'
+        ach=Achievement.objects.all()
+        stud=Student.objects.all()
+        coun=Counselor.objects.get(user=obj)
+        context={
+            'name':obj.first_name+" "+obj.last_name,
+            'id':coun.id,
+            'usr':usrtype,
+            'ach':ach,
+            'stud':stud
+        }
+        print(coun.id)
+        return render(request,"users/counselorview.html",context)
+
+    else:
+        usrtype='Admin'
+        ach=Achievement.objects.all()
+
+    context={
+        'usr':usrtype,
+    }
+
+    return render(request,"users/user.html",context)
 
 
 def logout_view(request):
     logout(request)
-    return HttpResponse("Logged out.")
+    return render(request,"users/login.html",{'message':'Logged out'})
 
 
 class LoginView(FormView):
