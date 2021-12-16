@@ -1,11 +1,13 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic import TemplateView, FormView
 from users.models import Counselor, Student, User
-from home.models import Achievement
+from home.models import Achievement, Organization
+
+from users.forms import AchievementForm
 
 
 class SignUpView(TemplateView):
@@ -75,3 +77,18 @@ class LoginView(FormView):
             return HttpResponseRedirect(reverse("index"))
         else:
             return self.form_invalid(form)
+
+def addachievement(request):
+    form=AchievementForm()
+    if request.method=='POST':
+        print(form['title'])
+        return HttpResponseRedirect(reverse("index"))
+
+    # studs=Student.objects.all()
+    # orgs=Organization.objects.all()
+    context={
+        # 'studs':studs,
+        # 'orgs':orgs,
+        'form':form
+    }
+    return render(request,'users/add_achievement.html',context)

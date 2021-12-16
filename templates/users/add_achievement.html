@@ -1,0 +1,17 @@
+{% extends 'users/layout.html' %}
+{% load crispy_forms_filters %}
+
+{% block body %}
+    <div>
+        <h2>Enter Achievement Details</h2>
+        <form method="post">
+            
+            {% csrf_token %}
+            {{ form|crispy }}
+
+            <input type="hidden" name="next" value="{{ next }}"><br>
+            <button type="submit" class="btn btn-warning">Add</button>
+        </form>
+        <br><br><br>
+    </div>
+{% endblock %}

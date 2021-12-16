@@ -1,19 +1,23 @@
 {% extends "users/layout.html" %}
+{% load crispy_forms_filters %}
 
 {% block body %}
     <div class="grid-item">
-        <h2>LOGIN</h2> 
-        {% if message %}
-            <div>{{ message }}</div>
-        {% endif %}
+        <div style="font-weight:bold;">
+            <h2>LOGIN</h2>
+                {% if message %}
+                    <div>{{ message }}</div>
+                {% endif %}
 
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" value="Submit">
-        </form><br><br>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+        
+                <input type="submit" value="Login" class="btn btn-primary">
+            </form><br><br>
+        </div>
 
-        <p>Don't have an account? </p>
-        <a href={% url 'signup' %}>Sign Up</a>
+        <p style="font-weight:bold;">Don't have an account? </p>
+        <a href={% url 'signup' %} class="btn btn-success">Sign Up</a>
     </div>
 {% endblock %}
