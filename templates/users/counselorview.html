@@ -1,0 +1,44 @@
+{% extends "users/layout.html" %}
+
+{% block body %} 
+    <h1>Welcome, {{ request.user.first_name }}</h1>
+        <ul>
+            <li>Username: {{ request.user.username }}</li>
+            <li>Email: {{ request.user.email }}</li>
+            <li>User-type: {{ usr }}</li>
+        </ul>
+
+    <div style="margin-left:20px;">
+        <h3>Name:       {{ name }}</h3>
+        <h3>ID:        {{ id }}</h3>
+        <a href="{% url 'logout' %}">Log Out</a>
+    </div>
+
+    {% if ach %}
+    <h2 style="text-align: center;">All Achievements List</h2>
+    <div class="grid-header" style="margin-left: 5px;">
+        <div class="item">ACH_ID</div>
+        <div class="item">Title</div>
+        <div class="item">Event Date</div>  
+        <div class="item">Type</div>
+        <div class="item">Academic Year</div>
+        <div class="item">Awarded By</div>  
+        <div class="item" style="margin-right: 5px;">Certficate</div>
+    </div>
+
+    {% for a in ach %}
+        <div class="grid-container" style="margin-left: 5px;">
+            <div class="grid-item">{{ a.id }}</div>
+            <div class="grid-item">{{ a.title }}</div>
+            <div class="grid-item">{{ a.achievement_date }}</div>  
+            <div class="grid-item">{{ a.type }}</div>
+            <div class="grid-item">{{ a.academic_year }}</div>
+            <div class="grid-item">{{ a.organization }}</div>  
+            <div class="grid-item" style="margin-right: 5px;">{{ a.certificate }}</div>
+        </div>
+    {% endfor %}
+    {% else %}
+    <h2>No achievements</h2>
+    {% endif %}
+
+{% endblock %}
