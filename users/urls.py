@@ -9,4 +9,5 @@ urlpatterns = [
     path("signup", users.SignUpView.as_view(), name="signup"),
     path("signup/student/", students.StudentSignUpView.as_view(), name="student_signup"),
     path('signup/counselor/', counselors.CounselorSignUpView.as_view(), name="counselor_signup"),
+    path('add-achievement/', users.addachievement, name="add_achievement")
 ]

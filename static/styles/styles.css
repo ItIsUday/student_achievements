@@ -1,36 +1,39 @@
 .newsInner a{color:white !important;font-size:12px;}
 
+.cols-stud {
+    grid-template-columns: 8fr 20fr 10fr 15fr 8fr 15fr 24fr;
+}
+
+.cols-coun {
+    grid-template-columns: 5fr 18fr 18fr 8fr 10fr 8fr 15fr 18fr;
+}
+
 .grid-container {
     display: grid;
-    grid-template-columns: 8fr 20fr 10fr 15fr 8fr 15fr 24fr;
-    /* background-color: #2196F3; */
-    /* padding: 5px; */
 }
 
 .grid-item {
     border: 2px solid #000000;
-    padding: 10px;
-    font-size: 15px;
+    padding: 7px;
+    font-size: 14px;
     text-align: center;
 }
 
 .grid-header {
     display: grid;
-    grid-template-columns: 8fr 20fr 10fr 15fr 8fr 15fr 24fr;
     background-color: #afafaf;
     font-weight: bolder;
 }
 
 .item {
-    padding: 10px;
+    padding: 7px;
     border: 2px solid #000000;
     color: #000000;
-    font-size: 15px;
+    font-size: 13px;
     text-align: center;
 }
 
 .grid-container:hover{
-    border: 2px solid #ffffff;
     font-size: 25px;
     color: rgb(17, 0, 255);
     font-weight: bold;
