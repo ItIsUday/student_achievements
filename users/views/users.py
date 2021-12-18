@@ -4,10 +4,10 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic import TemplateView, FormView
-from users.models import Counselor, Student, User
-from home.models import Achievement, Organization
 
+from home.models import Achievement
 from users.forms import AchievementForm
+from users.models import Counselor, Student, User
 
 
 class SignUpView(TemplateView):
@@ -17,50 +17,44 @@ class SignUpView(TemplateView):
 def index(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse("login"))
-    
-    obj=User.objects.get(username=request.user.username)
-    if obj.is_student:
-        usrtype='Student'
-        stud=Student.objects.get(user=obj)
-        ach=stud.achievements.all()
-        context={
-            'name':obj.first_name+" "+obj.last_name,
-            'USN':stud.usn,
-            'coun_name':stud.counselor.id,
-            'usr':usrtype,
-            'ach':ach
-        }
-        return render(request,"users/studentview.html",context)
 
-    elif obj.is_counselor:
-        usrtype='Counselor'
-        ach=Achievement.objects.all()
-        stud=Student.objects.all()
-        coun=Counselor.objects.get(user=obj)
-        context={
-            'name':obj.first_name+" "+obj.last_name,
-            'id':coun.id,
-            'usr':usrtype,
-            'ach':ach,
-            'stud':stud
+    user = User.objects.get(username=request.user.username)
+    if user.is_student:
+        student = Student.objects.get(user=user)
+        context = {
+            'name': user.get_full_name(),
+            'usn': student.usn,
+            'counselor': student.counselor.id,
+            'user_type': 'Student',
+            'achievements': student.achievements.all()
         }
-        print(coun.id)
-        return render(request,"users/counselorview.html",context)
+        return render(request, "users/student_view.html", context)
+
+    elif user.is_counselor:
+        counselor = Counselor.objects.get(user=user)
+        context = {
+            'name': user.get_full_name(),
+            'id': counselor.id,
+            'user_type': 'Counselor',
+            'achievements': Achievement.objects.all(),
+            'students': Student.objects.all()
+        }
+        return render(request, "users/counselor_view.html", context)
 
     else:
-        usrtype='Admin'
-        ach=Achievement.objects.all()
+        user_type = 'Admin'
+        achievements = Achievement.objects.all()
 
-    context={
-        'usr':usrtype,
+    context = {
+        'user': user_type,
     }
 
-    return render(request,"users/user.html",context)
+    return render(request, "users/user.html", context)
 
 
 def logout_view(request):
     logout(request)
-    return render(request,"users/login.html",{'message':'Logged out'})
+    return render(request, "users/login.html", {'message': 'Logged out'})
 
 
 class LoginView(FormView):
@@ -78,17 +72,18 @@ class LoginView(FormView):
         else:
             return self.form_invalid(form)
 
-def addachievement(request):
-    form=AchievementForm()
-    if request.method=='POST':
+
+def add_achievement(request):
+    form = AchievementForm()
+    if request.method == 'POST':
         print(form['title'])
         return HttpResponseRedirect(reverse("index"))
 
-    # studs=Student.objects.all()
-    # orgs=Organization.objects.all()
-    context={
-        # 'studs':studs,
-        # 'orgs':orgs,
-        'form':form
+    # students = Student.objects.all()
+    # organizations = Organization.objects.all()
+    context = {
+        # 'students': students,
+        # 'organizations': organizations,
+        'form': form
     }
-    return render(request,'users/add_achievement.html',context)
+    return render(request, 'users/add_achievement.html', context)
