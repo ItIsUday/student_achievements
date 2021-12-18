@@ -1,24 +1,39 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.db import transaction
-from django.db.models import query
-from django.forms.fields import CharField, DateField
-from home.models import Organization
 
+from home.models import Organization, Achievement
 from users.models import User, Student, Counselor
 
 
 class StudentSignUpForm(UserCreationForm):
-    email = forms.EmailField(max_length=254)
-    usn = forms.CharField(max_length=15)
-    phone = forms.CharField(max_length=10)
-    birth_date = forms.DateField(widget=forms.widgets.DateInput(attrs={'type': 'date'}), required=False)
+    email = forms.EmailField(
+        max_length=255,
+        widget=forms.widgets.TextInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
+    )
+    usn = forms.CharField(
+        max_length=15,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'USN'}),
+    )
+    phone = forms.CharField(
+        max_length=10,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number (IN)'}),
+    )
+    birth_date = forms.DateField(
+        required=False,
+        widget=forms.widgets.DateInput(attrs={'type': 'date'}),
+    )
     counselor = forms.ModelChoiceField(queryset=Counselor.objects.all())
 
     class Meta(UserCreationForm.Meta):
         model = User
         fields = ["username", "first_name", "last_name", "email", "usn", "phone", "birth_date", "counselor",
                   "password1", "password2"]
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
+        }
 
     @transaction.atomic
     def save(self):
@@ -36,13 +51,27 @@ class StudentSignUpForm(UserCreationForm):
 
 
 class CounselorSignUpForm(UserCreationForm):
-    email = forms.EmailField(max_length=254)
-    ID = forms.CharField(max_length=15)
-    phone = forms.CharField(max_length=10)
+    email = forms.EmailField(
+        max_length=254,
+        widget=forms.widgets.TextInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
+    )
+    ID = forms.CharField(
+        max_length=15,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'ID'}),
+    )
+    phone = forms.CharField(
+        max_length=10,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number (IN)'}),
+    )
 
     class Meta(UserCreationForm.Meta):
         model = User
         fields = ["username", "first_name", "last_name", "email", "ID", "phone", "password1", "password2"]
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
+        }
 
     @transaction.atomic
     def save(self):
@@ -56,11 +85,26 @@ class CounselorSignUpForm(UserCreationForm):
         )
         return user
 
-class AchievementForm(forms.Form):
-    title=forms.CharField(max_length=50)
-    date=forms.DateField(widget=forms.widgets.DateInput(attrs={'type': 'date'}))
-    type=forms.CharField(max_length=20, help_text = "Enter type of achievement")
-    academic_year=forms.IntegerField(min_value=2010,max_value=2022)
-    certificate=forms.FileField()
-    holders=forms.ModelMultipleChoiceField(queryset=Student.objects.all())
-    organization=forms.ModelChoiceField(queryset=Organization.objects.all())
+
+class AchievementForm(forms.ModelForm):
+    title = forms.CharField(
+        max_length=255,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Title'})
+    )
+    type = forms.CharField(
+        max_length=20,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Title'})
+    )
+    academic_year = forms.IntegerField(
+        min_value=2010,
+        max_value=2022,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Academic Year'}),
+    )
+    date = forms.DateField(widget=forms.widgets.DateInput(attrs={'type': 'date'}))
+    certificate = forms.FileField()
+    holders = forms.ModelMultipleChoiceField(queryset=Student.objects.all())
+    organization = forms.ModelChoiceField(queryset=Organization.objects.all())
+
+    class Meta:
+        model = Achievement
+        fields = ["title", "type", "organization", "academic_year", "date", "certificate", "holders"]

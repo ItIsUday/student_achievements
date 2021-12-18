@@ -1,11 +1,11 @@
 {% extends "users/layout.html" %}
 
-{% block body %} 
+{% block body %}
     <h1>Welcome, {{ request.user.first_name }}</h1>
     <ul>
         <li>Username: {{ request.user.username }}</li>
         <li>Email: {{ request.user.email }}</li>
-        <li>User-type: {{ usr }}</li>
+        <li>User-type: {{ user_type }}</li>
     </ul>
 
     {% if request.user.is_student %}
