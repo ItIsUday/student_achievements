@@ -22,38 +22,32 @@ def index(request):
     user = User.objects.get(username=request.user.username)
     if user.is_student:
         student = Student.objects.get(user=user)
-        achievements=student.achievements.all()
-        links=[]
-        for a in achievements:
-            link='file://'+str(a.certificate.file)
-            links.append(link)
+        achievements = student.achievements.all()
+        links = [f"file://{achievement.certificate.file}" for achievement in achievements]
         
-        achievements_links=zip(achievements,links)
+        achievements_links = zip(achievements,links)
         context = {
             'name': user.get_full_name(),
             'usn': student.usn,
             'counselor': student.counselor.id,
             'user_type': 'Student',
             # 'achievements': achievements,
-            'achievements_links':achievements_links,
+            'achievements_links': achievements_links,
         }
         return render(request, "users/student_view.html", context)
 
     elif user.is_counselor:
         counselor = Counselor.objects.get(user=user)
         achievements=Achievement.objects.all()
-        links=[]
-        for a in achievements:
-            link='file://'+str(a.certificate.file)
-            links.append(link)
+        links = [f"file://{achievement.certificate.file}" for achievement in achievements]
         
-        achievements_links=zip(achievements,links)
+        achievements_links = zip(achievements,links)
         context = {
             'name': user.get_full_name(),
             'id': counselor.id,
             'user_type': 'Counsellor',
             'students': Student.objects.all(),
-            'achievements_links':achievements_links,
+            'achievements_links': achievements_links,
         }
         return render(request, "users/counselor_view.html", context)
 
@@ -91,18 +85,18 @@ class LoginView(FormView):
 
 def add_achievement(request):    
     if request.method == 'POST':
-        form=AchievementForm(request.POST, request.FILES)
+        form = AchievementForm(request.POST, request.FILES)
         if form.is_valid():
-            ach_obj=form.save()
-            holders=form.cleaned_data.get("holders")
+            ach_obj = form.save()
+            holders = form.cleaned_data.get("holders")
             for h in holders:
                 h.achievements.add(ach_obj)
 
             context = {
-                'message':'New Achievement Added Successfully!',
+                'message': 'New Achievement Added Successfully!',
                 'form': form
             }
-            return render(request,'users/add_achievement.html',context)
+            return render(request, 'users/add_achievement.html', context)
         else:
             return HttpResponse(form.errors)
     

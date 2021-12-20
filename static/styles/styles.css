@@ -1,6 +1,10 @@
 .newsInner a {
-    color:white !important;
-    font-size:12px;
+    color: white !important;
+    font-size: 12px;
+}
+
+.cols-stud {
+    grid-template-columns: 8fr 20fr 10fr 15fr 8fr 15fr 24fr;
 }
 
 input {max-width:17em};
@@ -34,7 +38,7 @@ input {max-width:17em};
     text-align: center;
 }
 
-.grid-container:hover{
+.grid-container:hover {
     font-size: 25px;
     color: rgb(17, 0, 255);
     font-weight: bold;
