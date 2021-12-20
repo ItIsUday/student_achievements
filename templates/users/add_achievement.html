@@ -2,16 +2,23 @@
 {% load crispy_forms_filters %}
 
 {% block body %}
-    <div>
-        <h2>Enter Achievement Details</h2>
-        <form method="post">
+    <div style="margin-left:20px;">
+        {% if message %}
+            <h2>{{ message }}</h2>
+        {% else %}
+            <h2>Enter Achievement Details</h2>
+            <form method="post" enctype="multipart/form-data" style="margin-left:20px;">
 
-            {% csrf_token %}
-            {{ form|crispy }}
+                {% csrf_token %}
+                {{ form|crispy }}
 
-            <input type="hidden" name="next" value="{{ next }}"><br>
-            <button type="submit" class="btn btn-warning">Add</button>
-        </form>
-        <br><br><br>
+                <input type="hidden" name="next" value="{{ next }}"><br>
+                <button type="submit" class="btn btn-warning">Add</button>
+                <a href="{% url 'index' %}" class="btn btn-secondary">Go Back</a>
+            </form>
+        {% endif %}
+        <br>
+        
+        <br><br>
     </div>
 {% endblock %}
