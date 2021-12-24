@@ -3,11 +3,9 @@
     font-size: 12px;
 }
 
-.cols-stud {
-    grid-template-columns: 8fr 20fr 10fr 15fr 8fr 15fr 24fr;
+input {
+  max-width: 17em
 }
-
-input {max-width:17em};
 
 .cols-grid {
     grid-template-columns: 8fr 18fr 18fr 8fr 10fr 8fr 15fr 8fr;
@@ -26,7 +24,7 @@ input {max-width:17em};
 
 .grid-header {
     display: grid;
-    background-color: #afafaf;
+    background-color: #0d24a5;
     font-weight: bolder;
 }
 
@@ -36,10 +34,12 @@ input {max-width:17em};
     color: #000000;
     font-size: 13px;
     text-align: center;
+    overflow-wrap: break-word;
+    color: white;
 }
 
 .grid-container:hover {
     font-size: 25px;
-    color: rgb(17, 0, 255);
     font-weight: bold;
+    background: rgb(216, 228, 255);
 }

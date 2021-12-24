@@ -21,7 +21,7 @@
     <br><br>
     <br><br>
 
-    {% if achievements_links %}
+    {% if achievements %}
     <h2 style="text-align: center;">Your Achievements</h2>
     <div class="grid-header cols-grid">
         <div class="item">ACH_ID</div>
@@ -57,7 +57,8 @@
         </div>
     {% endfor %}
     {% else %}
-    <h2>No Achievements</h2>
+    <h2 style="text-align:center;">No Achievements</h2>
     {% endif %}
     <br><br>
+
 {% endblock %}

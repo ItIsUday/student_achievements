@@ -2,9 +2,13 @@
 {% load crispy_forms_filters %}
 
 {% block body %}
+    <style>
+        label{margin-top:15px}
+    </style>
     <div style="margin-left:20px;">
         {% if message %}
             <h2>{{ message }}</h2>
+            <a href="{% url 'index' %}" class="btn btn-secondary">Home</a>
         {% else %}
             <h2>Enter Achievement Details</h2>
             <form method="post" enctype="multipart/form-data" style="margin-left:20px;">

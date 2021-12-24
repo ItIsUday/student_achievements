@@ -1,17 +1,14 @@
 {% extends "users/layout.html" %}
 
 {% block body %}
-    <h1>Welcome, {{ request.user.first_name }}</h1>
-    <ul>
-        <li>Username: {{ request.user.username }}</li>
-        <li>Email: {{ request.user.email }}</li>
-        <li>User-type: {{ user_type }}</li>
-    </ul>
-
-    {% if request.user.is_student %}
-        <a href={% url 'index' %}>View Your Achievements</a>
-    {% else %}
-        <a href={% url 'signup' %}>View All Achievements</a>
+    {% if request.user.first_name %}
+    <h3>Name: {{ request.user.first_name }}</h3>
     {% endif %}
+    <h3>Username: {{ request.user.username }}</h3>
+    <h3>Email: {{ request.user.email }}</h3>
+    <h3>User-type: {{ user }}</h3>
+    <br><br>
+    <a class="btn btn-danger" href="/admin">ADMIN</a>
+    <a class="btn btn-info" href="{% url 'logout' %}">Logout</a>
 
 {% endblock %}

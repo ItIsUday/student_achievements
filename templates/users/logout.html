@@ -1,0 +1,11 @@
+{% extends 'users/layout.html' %}
+
+{% block body %}
+    <div class="grid-item">
+        <h2>{{ message }}</h2>
+        <small class="text-muted">
+            <a class="btn btn-primary" href="{% url 'login' %}">Login</a>
+            <a href="{% url 'signup' %}" class="btn btn-success">Sign Up</a>
+        </small>
+    </div>
+{% endblock %}
