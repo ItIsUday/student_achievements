@@ -21,56 +21,22 @@ def index(request):
 
     user = User.objects.get(username=request.user.username)
     if user.is_student:
-        student = Student.objects.get(user=user)
-        achievements=student.achievements.all()
-        links=[]
-        for a in achievements:
-            link='file://'+str(a.certificate.file)
-            links.append(link)
-        
-        achievements_links=zip(achievements,links)
-        context = {
-            'name': user.get_full_name(),
-            'usn': student.usn,
-            'counselor': student.counselor.id,
-            'user_type': 'Student',
-            # 'achievements': achievements,
-            'achievements_links':achievements_links,
-        }
-        return render(request, "users/student_view.html", context)
+        return student_view(request,user)
 
     elif user.is_counselor:
-        counselor = Counselor.objects.get(user=user)
-        achievements=Achievement.objects.all()
-        links=[]
-        for a in achievements:
-            link='file://'+str(a.certificate.file)
-            links.append(link)
-        
-        achievements_links=zip(achievements,links)
-        context = {
-            'name': user.get_full_name(),
-            'id': counselor.id,
-            'user_type': 'Counsellor',
-            'students': Student.objects.all(),
-            'achievements_links':achievements_links,
-        }
-        return render(request, "users/counselor_view.html", context)
+        return counselor_view(request,user)
 
     else:
         user_type = 'Admin'
-        achievements = Achievement.objects.all()
-
-    context = {
-        'user': user_type,
-    }
-
-    return render(request, "users/user.html", context)
+        context = {
+            'user': user_type,
+        }
+        return render(request, "users/user.html", context)
 
 
 def logout_view(request):
     logout(request)
-    return render(request, "users/login.html", {'message': 'Logged out'})
+    return render(request, "users/logout.html",{'message':'Logged out Successfully!'})
 
 
 class LoginView(FormView):
@@ -90,6 +56,9 @@ class LoginView(FormView):
 
 
 def add_achievement(request):    
+    if request.user.is_authenticated is not True:
+        return render(request, "users/logout.html",{'message':'You must be signed in to add new achievement'})
+
     if request.method == 'POST':
         form=AchievementForm(request.POST, request.FILES)
         if form.is_valid():
@@ -111,3 +80,74 @@ def add_achievement(request):
         'form': form
     }
     return render(request, 'users/add_achievement.html', context)
+
+def counselor_view(request,user_obj):
+    achievements=Achievement.objects.all()
+    counselor = Counselor.objects.get(user=user_obj)
+    context={
+        'name': user_obj.get_full_name(),
+        'id': counselor.id,
+        'user_type': 'Counselor',
+    }
+
+    if request.method == 'POST':
+        usn=request.POST.get('usn','')
+        year=request.POST.get('year','')
+        type=request.POST.get('type','')
+        organization=request.POST.get('organization','')
+        sortby=request.POST.get('sortby','')
+                
+        if usn:
+            student = Student.objects.filter(usn=usn)
+            if student:
+                student = Student.objects.filter(usn=usn)[0]
+                achievements=achievements.filter(holders=student)
+            else:
+                achievements=achievements.filter(id='ach')
+        
+        if type:
+            achievements=achievements.filter(type=type)
+        
+        if year:
+            achievements=achievements.filter(academic_year=year)
+
+        if organization:
+            achievements=achievements.filter(organization=organization)
+
+        if sortby:
+            achievements=achievements.order_by(sortby)
+
+        context['usn']=usn
+        context['year']=year
+        context['type']=type
+        context['org']=organization
+            
+    links=[]
+    for a in achievements:
+        link='file://'+str(a.certificate.file)
+        links.append(link)
+    
+    achievements_links=zip(achievements,links)
+    context['achievements']=achievements
+    context['achievements_links']=achievements_links
+
+    return render(request, "users/counselor_view.html", context)
+
+def student_view(request,user_obj):
+    student = Student.objects.get(user=user_obj)
+    achievements=student.achievements.all()
+    links=[]
+    for a in achievements:
+        link='file://'+str(a.certificate.file)
+        links.append(link)
+    
+    achievements_links=zip(achievements,links)
+    context = {
+        'name': user_obj.get_full_name(),
+        'usn': student.usn,
+        'counselor': student.counselor.id,
+        'user_type': 'Student',
+        'achievements': achievements,
+        'achievements_links':achievements_links,
+    }
+    return render(request, "users/student_view.html", context)
