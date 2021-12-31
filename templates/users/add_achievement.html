@@ -3,7 +3,10 @@
 
 {% block body %}
     <style>
-        label{margin-top:15px}
+        label{
+            margin-top:15px;
+            font-weight:bold;
+        }
     </style>
     <div style="margin-left:20px;">
         {% if message %}
@@ -15,9 +18,9 @@
 
                 {% csrf_token %}
                 {{ form|crispy }}
-
+                <input type="hidden" name="ach_id" value="{{ ach_id }}"><br>
                 <input type="hidden" name="next" value="{{ next }}"><br>
-                <button type="submit" class="btn btn-warning">Add</button>
+                <button type="submit" class="btn btn-warning">Save</button>
                 <a href="{% url 'index' %}" class="btn btn-secondary">Go Back</a>
             </form>
         {% endif %}

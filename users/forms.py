@@ -109,7 +109,6 @@ class AchievementForm(ModelForm):
         queryset = Student.objects.all(),
         help_text = 'Hold ctrl and select',
         widget = forms.SelectMultiple(attrs={'style': 'max-width:17em'}),
-        # widget=forms.CheckboxSelectMultiple
     )
     organization = forms.ModelChoiceField(queryset = Organization.objects.all(),
         widget = forms.Select(attrs = {'style': 'max-width:17em'})
