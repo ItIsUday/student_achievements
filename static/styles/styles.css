@@ -7,8 +7,12 @@ input {
   max-width: 17em
 }
 
-.cols-grid {
-    grid-template-columns: 8fr 18fr 18fr 8fr 10fr 8fr 15fr 8fr;
+.cols-counselor {
+    grid-template-columns: 5fr 18fr 18fr 8fr 10fr 8fr 10fr 6fr;
+}
+
+.cols-student {
+    grid-template-columns: 5fr 18fr 18fr 8fr 10fr 8fr 10fr 6fr 4fr;
 }
 
 .grid-container {
@@ -34,6 +38,7 @@ input {
     color: #000000;
     font-size: 13px;
     text-align: center;
+    word-wrap: break-word;
     overflow-wrap: break-word;
     color: white;
 }

@@ -2,29 +2,28 @@
 
 {% block body %}
     <style>
-        input{
+        input,select{
             max-width:10em;
-            margin-right:7px;
+            margin-right:9px;
         }
     </style>
-    <table class="table table-striped">
-        <tr>
-            <td><h4>Name: {{ name }}</h4></td>
-            <td><h4>ID: {{ id }}</h4></td>
-            <td><h4>User: {{ user_type }}</h4></td>
-          </tr>
-          <tr>
-            <td><h5>Username: {{ request.user.username }}</h5></td>
-            <td><h5>Email: {{ request.user.email }}</h5></td>
-            <td><a href="{% url 'logout' %}" class="btn btn-outline-danger">Log Out</a></td>
-          </tr>
-    </table>
-
-    <br><br><br>
- 
     <div style="text-align: center;">
-        <h2>Student Achievements</h2><br>
+        <h3>Student Achievement Portal<br><br></h3>
+        <table class="table table-striped table-bordered">
+            <tr>
+                <td><h4>Name: {{ name }}</h4></td>
+                <td><h4>ID: {{ id }}</h4></td>
+                <td><h4>User: {{ user_type }}</h4></td>
+            </tr>
+            <tr>
+                <td><h5>Username: {{ request.user.username }}</h5></td>
+                <td><h5>Email: {{ request.user.email }}</h5></td>
+                <td><a href="{% url 'logout' %}" class="btn btn-outline-danger">Log Out</a></td>
+            </tr>
+        </table>
+        <br><br><br>
 
+        <h2>Student Achievements</h2><br>
         <form method="post">
             {% csrf_token %}
             <div class="input-group">
@@ -39,6 +38,8 @@
                     <option value="type">Type</option>
                     <option value="organization">Organization</option>
                 </select>
+                <input type="checkbox" name="my_mentees" class="form-check-input" />
+                <label for="my_mentees" class="form-check-label">My Mentees Only</label>
             </div>
             <br>
             <button type="submit" class="btn btn-dark">Query</button>
@@ -49,7 +50,7 @@
     </div>
 
     {% if achievements %}
-    <div class="grid-header cols-grid" style="margin-right: 5px;">
+    <div class="grid-header cols-counselor" style="margin-right: 5px;">
         <div class="item">ACH_ID</div>
         <div class="item">Title</div>
         <div class="item">Held by</div>
@@ -61,7 +62,7 @@
     </div>
 
     {% for a,link in achievements_links %}
-        <div class="grid-container cols-grid" style="margin-right: 5px;">
+        <div class="grid-container cols-counselor" style="margin-right: 5px;">
             <div class="grid-item">{{ a.id }}</div>
             <div class="grid-item">{{ a.title }}</div>
             <div class="grid-item">
@@ -78,7 +79,7 @@
             <div class="grid-item">{{ a.academic_year }}</div>
             <div class="grid-item">{{ a.organization.name }}</div>  
             <div class="grid-item">
-                <a href="{{ a.certificate.file }}">link</a>
+                <a href="{{ a.certificate.url }}">link</a>
             </div>
         </div>
     {% endfor %}
