@@ -1,15 +1,19 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
-from django.forms.widgets import NullBooleanSelect
 from django.http import HttpResponseRedirect
-from django.http.response import Http404, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic import TemplateView, FormView
 
 from home.models import Achievement, Organization
-from users.forms import AchievementForm
 from users.models import Counselor, Student, User
+from home import views as homeview
+
+import nltk
+from nltk.metrics.distance import edit_distance
+type_corpus = []
+type_corpus = list(Achievement.objects.values_list('type',flat=True).distinct())
+org_corpus = list(Organization.objects.values_list('name',flat=True).distinct())
 
 
 class SignUpView(TemplateView):
@@ -59,15 +63,15 @@ def counselor_view(request,user_obj):
     achievements=Achievement.objects.all()
     counselor = Counselor.objects.get(user=user_obj)
     context={
-        'name': user_obj.get_full_name(),
+        'name': user_obj.get_full_name().capitalize(),
         'id': counselor.id,
         'user_type': 'Counselor',
     }
 
     if request.method == 'POST':
-        usn=request.POST.get('usn','')
+        usn=request.POST.get('usn','').upper()
         year=request.POST.get('year','')
-        type=request.POST.get('type','')
+        type=request.POST.get('type','').title()
         organization=request.POST.get('organization','')
         sortby=request.POST.get('sortby','')
         my_ments=request.POST.get('my_mentees','')
@@ -90,6 +94,10 @@ def counselor_view(request,user_obj):
         
         if type:
             achievements=achievements.filter(type=type)
+            if len(achievements)==0:
+                sugs=get_suggestions('type',type)
+                if sugs:
+                    context['type_suggestions']=sugs
         
         if year:
             achievements=achievements.filter(academic_year=year)
@@ -97,9 +105,13 @@ def counselor_view(request,user_obj):
         if organization:
             org_obj=Organization.objects.filter(name=organization)
             if org_obj:
-                achievements=achievements.filter(organization=org_obj)[0]
+                org_obj=org_obj[0]
+                achievements=achievements.filter(organization=org_obj)
             else:
                 achievements=achievements.filter(organization='ach')
+                sugs=get_suggestions('organization',organization)
+                if sugs:
+                    context['org_suggestions']=sugs
 
         if sortby:
             achievements=achievements.order_by(sortby)
@@ -122,7 +134,7 @@ def counselor_view(request,user_obj):
 
 def student_view(request,user_obj):
     if request.method == 'POST':
-        return edit_achievement(request)
+        return homeview.edit_achievement(request)
 
     student = Student.objects.get(user=user_obj)
     achievements=student.achievements.all()
@@ -142,63 +154,23 @@ def student_view(request,user_obj):
     }
     return render(request, "users/student_view.html", context)
 
-def add_achievement(request):    
-    if request.user.is_authenticated is not True:
-        return render(request, "users/logout.html",{'message':'You must be signed in to add new achievement'})
-
-    if request.method == 'POST':
-        form=AchievementForm(request.POST, request.FILES)
-        if form.is_valid():
-            # ach_obj=Achievement.objects.create()
-            # serial = Achievement.objects.count()
-            # ach_obj.id = 'ach'+str(serial+1)
-            ach_obj=form.save()
-            # save_achievement(request,ach_obj)
-            holders=form.cleaned_data.get("holders")
-            for h in holders:
-                h.achievements.add(ach_obj)
-
-            context = {'message':'New Achievement Added Successfully!'}
-            return render(request,'users/add_achievement.html',context)
-        else:
-            return HttpResponse(form.errors)
+def get_suggestions(str,word):
+    if str=='type':
+        corpus=type_corpus
+    elif str=='organization':
+        corpus=org_corpus
     
-    form = AchievementForm()
-    return render(request, 'users/add_achievement.html', {'form': form})
+    mn=10
+    distances=[]
+    for cor in corpus:
+        ed=edit_distance(word,cor)
+        mn=min(mn,ed)
+        distances.append(ed)
 
-def edit_achievement(request):
-    if request.POST.get('id',''):
-        id = request.POST.get('id','')
-        ach_obj=Achievement.objects.get(id=id)
-        data={
-            'title':ach_obj.title,
-            'type':ach_obj.type,
-            'date':ach_obj.achievement_date,
-            'academic_year':ach_obj.academic_year,
-            'organization':ach_obj.organization,
-            'certificate':ach_obj.certificate,
-        }
-        form=AchievementForm(initial=data)
-        context={
-            'ach_id':ach_obj.id,
-            'form': form,
-        }
-        return render(request, 'users/add_achievement.html', context)
+    suggestions=[]
+    cor_ed=zip(corpus,distances)
+    for cor,ed in cor_ed:
+        if ed==mn:
+            suggestions.append(cor)
 
-    else:
-        id = request.POST.get('ach_id','')
-        ach_obj=Achievement.objects.get(id=id)
-        save_achievement(request,ach_obj)
-        return HttpResponseRedirect(reverse("index"))
-
-def save_achievement(request,ach_obj):
-    ach_obj.title=request.POST.get('title','')
-    ach_obj.type=request.POST.get('type','')
-    print(request.POST.get('date',''))
-    ach_obj.achievement_date=request.POST.get('date','')
-    ach_obj.academic_year=request.POST.get('academic_year','')
-    org_obj=Organization.objects.get(id=request.POST.get('organization',''))
-    ach_obj.organization=org_obj
-    if request.POST.get('certficate',''):
-        ach_obj.certificate=request.POST.get('certficate','')
-    ach_obj.save()
+    return suggestions
