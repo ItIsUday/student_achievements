@@ -43,10 +43,23 @@
             </div>
             <br>
             <button type="submit" class="btn btn-dark">Query</button>
-            <a href="{% url 'index' %}" class="btn btn-secondary">See All Achievements</a>
+            <a href="{% url 'index' %}" class="btn btn-secondary">Clear Filters</a>
         </form>
         <br><br>
         <h4>Count: {{ achievements.count }}</h4>
+        {% if type_suggestions %}
+            <h5>Type suggestions:<h5>
+                {% for sug in type_suggestions %}
+                    <li>{{ sug }}</li>
+                {% endfor %}
+            <br>
+        {% endif %}
+        {% if org_suggestions %}
+            <h5>Organization suggestions:<h5>
+                {% for sug in org_suggestions %}
+                    <li>{{ sug }}</li>
+                {% endfor %}
+        {% endif %}
     </div>
 
     {% if achievements %}

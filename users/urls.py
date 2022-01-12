@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import counselors, students, users
+from home import views as homeview
 
 urlpatterns = [
     path("", users.index, name="index"),
@@ -9,5 +10,5 @@ urlpatterns = [
     path("signup", users.SignUpView.as_view(), name="signup"),
     path("signup/student/", students.StudentSignUpView.as_view(), name="student_signup"),
     path('signup/counselor/', counselors.CounselorSignUpView.as_view(), name="counselor_signup"),
-    path('add-achievement/', users.add_achievement, name="add_achievement")
+    path('add-achievement/', homeview.add_achievement, name="add_achievement")
 ]

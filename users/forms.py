@@ -2,6 +2,7 @@ from django import forms
 from django.forms import ModelForm
 from django.contrib.auth.forms import UserCreationForm
 from django.db import transaction
+from django.core.validators import RegexValidator
 
 from home.models import Organization, Achievement
 from users.models import User, Student, Counselor
@@ -10,13 +11,16 @@ from users.models import User, Student, Counselor
 class StudentSignUpForm(UserCreationForm):
     email = forms.EmailField(
         max_length=255,
-        widget=forms.widgets.TextInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
+        validators=[RegexValidator('(.)+@rvce\.edu\.in',message='Only valid RVCE mail ID allowed')],
+        widget=forms.widgets.TextInput(attrs={'class': 'form-control', 'placeholder': 'RVCE Email'}),
     )
     usn = forms.CharField(
         max_length=15,
+        validators=[RegexValidator('1RV\d\d[A-Z][A-Z][0-4]\d\d',message='Invalid USN')],
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'USN'}),
     )
     phone = forms.CharField(
+        # to add min_length=10 before deploying,
         max_length=10,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number (IN)'}),
     )
@@ -124,7 +128,7 @@ class AchievementForm(ModelForm):
         ach_obj = Achievement.objects.create(
             id = 'ach'+str(serial+1),
             title = self.cleaned_data.get("title"),
-            type=self.cleaned_data.get("type"),
+            type=self.cleaned_data.get("type").capitalize(),
             organization = self.cleaned_data.get("organization"),
             academic_year = self.cleaned_data.get("academic_year"),
             achievement_date = self.cleaned_data.get("date"),
