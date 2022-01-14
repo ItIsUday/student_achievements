@@ -23,51 +23,51 @@
     <br><br>
 
     {% if achievements %}
-    <div style="text-align: center;">
-        <h2>Your Achievements</h2>
-        <h4>Count: {{ achievements.count }}</h4>
-    </div>
-    <div class="grid-header cols-student" style="margin-right: 5px;">
-        <div class="item">ACH_ID</div>
-        <div class="item">Title</div>
-        <div class="item">Held by</div>
-        <div class="item">Event Date</div>  
-        <div class="item">Type</div>
-        <div class="item">Academic Year</div>
-        <div class="item">Awarded By</div>
-        <div class="item">Certficate</div>
-        <div class="item">Edit</div>
-    </div>
-
-    {% for a,link in achievements_links %}
-        <div class="grid-container cols-student" cols-grid" style="margin-right: 5px;">
-            <div class="grid-item">{{ a.id }}</div>
-            <div class="grid-item">{{ a.title }}</div>
-            <div class="grid-item">
-                {% if a.holders.all %}
-                    {% for h in a.holders.all %}
-                        {{ h }}<br>
-                    {% endfor %}
-                {% else %}
-                    <p style="color: #aaa;">No members</p>
-                {% endif %}
-            </div>
-            <div class="grid-item">{{ a.achievement_date }}</div>  
-            <div class="grid-item">{{ a.type }}</div>
-            <div class="grid-item">{{ a.academic_year }}</div>
-            <div class="grid-item">{{ a.organization.name }}</div>  
-            <div class="grid-item"><a href={{ link }}>link</a></div>
-            <div class="grid-item">
-                <form method="post">
-                    {% csrf_token %}
-                    <input name="id" value={{ a.id }} hidden="true" />
-                    <button type="submit">edit</button>
-                </form>
-            </div>
+        <div style="text-align: center;">
+            <h2>Your Achievements</h2>
+            <h4>Count: {{ achievements.count }}</h4>
         </div>
-    {% endfor %}
+        <div class="grid-header cols-student" style="margin-right: 5px;">
+            <div class="item">ACH_ID</div>
+            <div class="item">Title</div>
+            <div class="item">Held by</div>
+            <div class="item">Event Date</div>
+            <div class="item">Type</div>
+            <div class="item">Academic Year</div>
+            <div class="item">Awarded By</div>
+            <div class="item">Certficate</div>
+            <div class="item">Edit</div>
+        </div>
+
+        {% for a,link in achievements_links %}
+            <div class="grid-container cols-student cols-grid" style="margin-right: 5px;">
+                <div class="grid-item">{{ a.id }}</div>
+                <div class="grid-item">{{ a.title }}</div>
+                <div class="grid-item">
+                    {% if a.holders.all %}
+                        {% for h in a.holders.all %}
+                            {{ h }}<br>
+                        {% endfor %}
+                    {% else %}
+                        <p style="color: #aaa;">No members</p>
+                    {% endif %}
+                </div>
+                <div class="grid-item">{{ a.achievement_date }}</div>
+                <div class="grid-item">{{ a.type }}</div>
+                <div class="grid-item">{{ a.academic_year }}</div>
+                <div class="grid-item">{{ a.organization.name }}</div>
+                <div class="grid-item"><a href={{ link }}>link</a></div>
+                <div class="grid-item">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input name="id" value={{ a.id }} hidden="true"/>
+                        <button type="submit">edit</button>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
     {% else %}
-    <h2 style="text-align:center;">No Achievements</h2>
+        <h2 style="text-align:center;">No Achievements</h2>
     {% endif %}
     <br><br>
 

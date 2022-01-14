@@ -16,7 +16,7 @@ class Achievement(models.Model):
     achievement_date = models.DateField()
     type = models.CharField(max_length=30, null=True)
     academic_year = models.PositiveSmallIntegerField()
-    certificate = models.FileField(upload_to ='certificates/')
+    certificate = models.FileField(upload_to='certificates/')
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
 
     def __str__(self):
