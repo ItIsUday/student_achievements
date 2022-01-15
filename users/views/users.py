@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.http import HttpResponseRedirect
+from django.http.response import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic import TemplateView, FormView
@@ -9,9 +10,7 @@ from home.models import Achievement, Organization
 from users.models import Counselor, Student, User
 from home import views as homeview
 
-import nltk
 from nltk.metrics.distance import edit_distance
-type_corpus = []
 type_corpus = list(Achievement.objects.values_list('type',flat=True).distinct())
 org_corpus = list(Organization.objects.values_list('name',flat=True).distinct())
 
@@ -72,7 +71,7 @@ def counselor_view(request,user_obj):
         usn=request.POST.get('usn','').upper()
         year=request.POST.get('year','')
         type=request.POST.get('type','').title()
-        organization=request.POST.get('organization','')
+        organization=request.POST.get('organization','').title()
         sortby=request.POST.get('sortby','')
         my_ments=request.POST.get('my_mentees','')
                 
@@ -120,15 +119,9 @@ def counselor_view(request,user_obj):
         context['year']=year
         context['type']=type
         context['org']=organization
-            
-    links=[]
-    for a in achievements:
-        link='file://'+str(a.certificate.file)
-        links.append(link)
-    
-    achievements_links=zip(achievements,links)
+              
     context['achievements']=achievements
-    context['achievements_links']=achievements_links
+    context['achievements_links']=ziplinks(achievements)
 
     return render(request, "users/counselor_view.html", context)
 
@@ -138,19 +131,13 @@ def student_view(request,user_obj):
 
     student = Student.objects.get(user=user_obj)
     achievements=student.achievements.all()
-    links=[]
-    for a in achievements:
-        link='file://'+str(a.certificate.file)
-        links.append(link)
-    
-    achievements_links=zip(achievements,links)
     context = {
         'name': user_obj.get_full_name(),
         'usn': student.usn,
         'counselor': student.counselor.id,
         'user_type': 'Student',
         'achievements': achievements,
-        'achievements_links':achievements_links,
+        'achievements_links':ziplinks(achievements),
     }
     return render(request, "users/student_view.html", context)
 
@@ -174,3 +161,25 @@ def get_suggestions(str,word):
             suggestions.append(cor)
 
     return suggestions
+
+def ziplinks(achievements):
+    links=[]
+    for a in achievements:
+        link='download?achid='+a.id
+        links.append(link)
+    
+    return zip(achievements,links)
+
+def usncomplete(request):
+    if 'term' in request.GET:
+        qs=Student.objects.filter(usn__icontains=request.GET.get('term')).order_by('usn')
+        usnlist=list(qs.values_list('usn',flat=True))
+        return JsonResponse(usnlist,safe=False)
+    return JsonResponse(None)
+
+def typecomplete(request):
+    if 'term' in request.GET:
+        qs=Achievement.objects.filter(type__icontains=request.GET.get('term'))
+        typelist=list(qs.values_list('type',flat=True).distinct())
+        return JsonResponse(typelist,safe=False)
+    return JsonResponse(None)

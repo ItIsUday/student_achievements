@@ -1,9 +1,12 @@
 from django.shortcuts import render
 from django.urls import reverse
-from django.http.response import HttpResponse
+from django.http.response import Http404, HttpResponse
 from django.http import HttpResponseRedirect
+import pathlib
+from wsgiref.util import FileWrapper
+
 from .models import Achievement, Organization
-from users.forms import AchievementForm
+from users.forms import AchievementForm,OrganizationForm
 
 def add_achievement(request):    
     if request.user.is_authenticated is not True:
@@ -61,3 +64,36 @@ def save_achievement(request,ach_obj):
     if request.POST.get('certficate',''):
         ach_obj.certificate=request.POST.get('certficate','')
     ach_obj.save()
+
+def add_org(request):
+    id = 'org'+str(Organization.objects.count()+1)
+    if request.method=='POST':
+        print(request)
+        form=OrganizationForm(request.POST)
+        if form.is_valid():
+            org_obj=Organization.objects.create(
+                id=id,
+                name=form.cleaned_data.get('name'),
+                type=form.cleaned_data.get('type'),
+            )
+            org_obj.save()
+            return HttpResponseRedirect(reverse('add_achievement'))
+        else:
+            return HttpResponse(form.errors)
+
+    form=OrganizationForm()
+    return render(request, 'users/add_organization.html', {'form':form,'id': id})
+
+def download_certificate(request,*args,**kwargs):
+    id=request.GET['achid']
+    obj=Achievement.objects.get(id=id)
+    path=obj.certificate.path
+    ext=pathlib.Path(path).suffix
+    fname=f'{obj.title}-{obj.achievement_date}{ext}'
+
+    with open(path,'rb') as f:
+        wrapper=FileWrapper(f)
+        content_type='application/force-download'
+        response=HttpResponse(wrapper,content_type=content_type)
+        response['Content-Disposition']=f'attachment;filename={fname}'
+        return response

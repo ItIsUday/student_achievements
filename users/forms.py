@@ -1,3 +1,4 @@
+from enum import unique
 from django import forms
 from django.forms import ModelForm
 from django.contrib.auth.forms import UserCreationForm
@@ -100,7 +101,7 @@ class AchievementForm(ModelForm):
     )
     type = forms.CharField(
         max_length=20,
-        widget = forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Achievement Type'})
+        widget = forms.TextInput(attrs={'id':'type','class': 'form-control', 'placeholder': 'Achievement Type'})
     )
     academic_year = forms.IntegerField(
         min_value=2010,
@@ -110,7 +111,7 @@ class AchievementForm(ModelForm):
     date = forms.DateField(widget=forms.widgets.DateInput(attrs={'type': 'date'}))
     certificate = forms.FileField()
     holders = forms.ModelMultipleChoiceField(
-        queryset = Student.objects.all(),
+        queryset = Student.objects.all().order_by('usn'),
         help_text = 'Hold ctrl and select',
         widget = forms.SelectMultiple(attrs={'style': 'max-width:17em'}),
     )
@@ -135,3 +136,17 @@ class AchievementForm(ModelForm):
             certificate = self.cleaned_data.get("certificate")
         )
         return ach_obj
+
+class OrganizationForm(ModelForm):
+    name = forms.CharField(
+        max_length=50,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Name'})
+    )
+    type = forms.CharField(
+        max_length=20,
+        widget = forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Organization Type'})
+    )
+
+    class Meta:
+        model = Organization
+        fields = ["name", "type"]
