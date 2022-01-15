@@ -14,8 +14,8 @@
             <a href="{% url 'index' %}" class="btn btn-secondary">Home</a>
         {% else %}
             <h2>Enter Achievement Details</h2>
+            <a href="{% url 'add_organization' %}" class="btn btn-outline-danger">Add New Organization</a>
             <form method="post" enctype="multipart/form-data" style="margin-left:20px;">
-
                 {% csrf_token %}
                 {{ form|crispy }}
                 <input type="hidden" name="ach_id" value="{{ ach_id }}"><br>
@@ -23,6 +23,13 @@
                 <button type="submit" class="btn btn-warning">Save</button>
                 <a href="{% url 'index' %}" class="btn btn-secondary">Go Back</a>
             </form>
+            <script>
+                $(
+                    function() {
+                        $("#type").autocomplete({source:"{% url 'typecomplete' %}"});
+                    }
+                );
+            </script>
         {% endif %}
         <br>
         

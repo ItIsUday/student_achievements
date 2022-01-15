@@ -27,7 +27,7 @@
         <form method="post">
             {% csrf_token %}
             <div class="input-group">
-                <input name="usn" value="{{ usn }}" placeholder="USN" class="form-control" style="margin-left:300px;"/>
+                <input name="usn" id="usn" value="{{ usn }}" placeholder="USN" class="form-control" style="margin-left:300px;"/>
                 <input name="year" value="{{ year }}" placeholder="year" class="form-control" />
                 <input name="type" value="{{ type }}" placeholder="type" class="form-control" />
                 <input name="organization" value="{{ org }}" placeholder="organization" class="form-control" />
@@ -45,6 +45,14 @@
             <button type="submit" class="btn btn-dark">Query</button>
             <a href="{% url 'index' %}" class="btn btn-secondary">Clear Filters</a>
         </form>
+        <script>
+            $(
+                function() {
+                    $("#usn").autocomplete({source:"{% url 'usncomplete' %}"});
+                }
+            );
+        </script>
+
         <br><br>
         <h4>Count: {{ achievements.count }}</h4>
         {% if type_suggestions %}
@@ -92,7 +100,7 @@
             <div class="grid-item">{{ a.academic_year }}</div>
             <div class="grid-item">{{ a.organization.name }}</div>  
             <div class="grid-item">
-                <a href="{{ a.certificate.url }}">link</a>
+                <a href="{{ link }}" class="btn-outline-dark btn-sm">download</a>
             </div>
         </div>
     {% endfor %}

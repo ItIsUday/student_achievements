@@ -10,5 +10,9 @@ urlpatterns = [
     path("signup", users.SignUpView.as_view(), name="signup"),
     path("signup/student/", students.StudentSignUpView.as_view(), name="student_signup"),
     path('signup/counselor/', counselors.CounselorSignUpView.as_view(), name="counselor_signup"),
-    path('add-achievement/', homeview.add_achievement, name="add_achievement")
+    path('add-achievement/', homeview.add_achievement, name="add_achievement"),
+    path('add-organization/',homeview.add_org,name="add_organization"),
+    path('download',homeview.download_certificate,name="download_certificate"),
+    path('usncomplete',users.usncomplete,name="usncomplete"),
+    path('typecomplete',users.typecomplete,name="typecomplete"),
 ]
