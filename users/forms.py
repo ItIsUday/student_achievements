@@ -18,8 +18,8 @@ class StudentSignUpForm(UserCreationForm):
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'USN'}),
     )
     phone = forms.CharField(
-        # to add min_length=10 before deploying,
         max_length=10,
+        validators=[RegexValidator('\d{10}', message='Invalid Phone Number')],
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number (IN)'}),
     )
     birth_date = forms.DateField(
@@ -57,7 +57,8 @@ class StudentSignUpForm(UserCreationForm):
 
 class CounselorSignUpForm(UserCreationForm):
     email = forms.EmailField(
-        max_length=254,
+        max_length=255,
+        validators=[RegexValidator('(.)+@rvce\.edu\.in', message='Only valid RVCE mail ID allowed')],
         widget=forms.widgets.TextInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
     )
     ID = forms.CharField(
@@ -66,6 +67,7 @@ class CounselorSignUpForm(UserCreationForm):
     )
     phone = forms.CharField(
         max_length=10,
+        validators=[RegexValidator('\d{10}', message='Invalid Phone Number')],
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number (IN)'}),
     )
 
