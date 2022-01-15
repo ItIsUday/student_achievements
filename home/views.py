@@ -51,9 +51,15 @@ def edit_achievement(request):
         return render(request, 'users/add_achievement.html', context)
 
     else:
+        form = AchievementForm(request.POST, request.FILES)
         id = request.POST.get('ach_id', '')
         ach_obj = Achievement.objects.get(id=id)
-        save_achievement(request, ach_obj)
+        if form.is_valid():
+            ach_obj.certificate = form.cleaned_data.get('certificate')
+            save_achievement(request, ach_obj)
+        else:
+            # form.is_valid gives False if new certificate is not uploaded
+            save_achievement(request, ach_obj)
         return HttpResponseRedirect(reverse("index"))
 
 
@@ -62,17 +68,13 @@ def save_achievement(request, ach_obj):
     ach_obj.type = request.POST.get('type', '').capitalize()
     ach_obj.achievement_date = request.POST.get('date', '')
     ach_obj.academic_year = request.POST.get('academic_year', '')
-    org_obj = Organization.objects.get(id=request.POST.get('organization', ''))
-    ach_obj.organization = org_obj
-    if request.POST.get('certificate', ''):
-        ach_obj.certificate = request.POST.get('certificate', '')
+    ach_obj.organization = Organization.objects.get(id=request.POST.get('organization', ''))
     ach_obj.save()
 
 
 def add_org(request):
     id = 'org' + str(Organization.objects.count() + 1)
     if request.method == 'POST':
-        print(request)
         form = OrganizationForm(request.POST)
         if form.is_valid():
             org_obj = Organization.objects.create(
@@ -83,22 +85,22 @@ def add_org(request):
             org_obj.save()
             return HttpResponseRedirect(reverse('add_achievement'))
         else:
-            return HttpResponse(form.errors)
+            return HttpResponse("<h2>Organization already present.</h2>")
 
     form = OrganizationForm()
     return render(request, 'users/add_organization.html', {'form': form, 'id': id})
 
 
-def download_certificate(request, *args, **kwargs):
+def download_certificate(request):
     id = request.GET['achid']
     obj = Achievement.objects.get(id=id)
     path = obj.certificate.path
     ext = pathlib.Path(path).suffix
-    fname = f'{obj.title}-{obj.achievement_date}{ext}'
+    file = f'{obj.title}_{obj.achievement_date}{ext}'
 
     with open(path, 'rb') as f:
         wrapper = FileWrapper(f)
         content_type = 'application/force-download'
         response = HttpResponse(wrapper, content_type=content_type)
-        response['Content-Disposition'] = f'attachment;filename={fname}'
+        response['Content-Disposition'] = f'attachment;filename={file}'
         return response

@@ -1,0 +1,49 @@
+{% extends "users/layout.html" %}
+
+{% block body %}
+    <div class="container">
+        {% if not students %}
+            <h3>No Counselees under You</h3>
+        {% endif %}
+        <table class="table table-striped table-bordered" style="text-align:center;">
+            <tr>
+                <td><h4>Name: {{ request.user.get_full_name }}</h4></td>
+                <td><h4>ID: {{ id }}</h4></td>
+                <td><h4>User: Counselor</h4></td>
+            </tr>
+            <tr>
+                <td><h5>Username: {{ request.user.username }}</h5></td>
+                <td><h5>Email: {{ request.user.email }}</h5></td>
+                <td>
+                    <a href="{% url 'index' %}" class="btn btn-secondary">Home</a>
+                    <a href="{% url 'logout' %}" class="btn btn-outline-danger">Log Out</a>
+                </td>
+            </tr>
+        </table>
+        <br><br>
+        <div class="grid-item">
+            <h2>My Counselees List</h2>
+            <h4>Count: {{ students.count }}</h4>
+        </div>
+        <table class="table table-bordered table-hover" style="font-size:16px; text-align:center;">
+            <tr class="table-primary" style="text-align:center; font-weight:bolder;">
+                <td style="text-align:left;">Student</td>
+                <td>Number of Achievements</td>
+                <td>Show Achievements</td>
+            </tr>
+            {% for s in students %}
+            <tr>
+                <td style="text-align:left;">{{ s }}</td>
+                <td>{{ s.achievements.count }}</td>
+                <td>
+                    <form action="{% url 'index' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="usn" value="{{ s.usn }}" />
+                        <button type="submit" class="btn btn-outline-dark">SHOW</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

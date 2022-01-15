@@ -26,9 +26,9 @@ class StudentSignUpForm(UserCreationForm):
         required=False,
         widget=forms.widgets.DateInput(attrs={'type': 'date'}),
     )
-    counselor = forms.ModelChoiceField(queryset=Counselor.objects.all(),
-                                       widget=forms.Select(attrs={'style': 'max-width:17em'})
-                                       )
+    counselor = forms.ModelChoiceField(queryset = Counselor.objects.all(),
+        widget = forms.Select(attrs={'style': 'max-width:17em'})
+    )
 
     class Meta(UserCreationForm.Meta):
         model = User

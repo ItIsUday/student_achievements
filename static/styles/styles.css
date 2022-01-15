@@ -38,7 +38,6 @@ input {
     color: #000000;
     font-size: 13px;
     text-align: center;
-    word-wrap: break-word;
     overflow-wrap: break-word;
     color: white;
 }
