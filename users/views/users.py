@@ -6,13 +6,9 @@ from django.urls import reverse
 from django.views.generic import TemplateView, FormView
 from nltk.metrics.distance import edit_distance
 
-from home import views as homeview
+from home import views as home_views
 from home.models import Achievement, Organization
 from users.models import Counselor, Student, User
-
-type_corpus = []
-type_corpus = list(Achievement.objects.values_list('type', flat=True).distinct())
-org_corpus = list(Organization.objects.values_list('name', flat=True).distinct())
 
 
 class SignUpView(TemplateView):
@@ -31,11 +27,7 @@ def index(request):
         return counselor_view(request, user)
 
     else:
-        user_type = 'Admin'
-        context = {
-            'user': user_type,
-        }
-        return render(request, "users/user.html", context)
+        return render(request, "users/user.html", {'user_type': 'Admin'})
 
 
 def logout_view(request):
@@ -63,104 +55,76 @@ def counselor_view(request, user_obj):
     achievements = Achievement.objects.all()
     counselor = Counselor.objects.get(user=user_obj)
     context = {
-        'name': user_obj.get_full_name().capitalize(),
+        'name': counselor,
         'id': counselor.id,
-        'user_type': 'Counselor',
+        'user_type': Counselor.type,
     }
 
     if request.method == 'POST':
         usn = request.POST.get('usn', '').upper()
-        year = request.POST.get('year', '')
-        type = request.POST.get('type', '').title()
-        organization = request.POST.get('organization', '')
-        sortby = request.POST.get('sortby', '')
-        my_ments = request.POST.get('my_mentees', '')
+        year = request.POST.get('year')
+        achievement_type = request.POST.get('achievement_type', '').title()
+        organization = request.POST.get('organization')
+        order = request.POST.get('sort_by')
+        counselees = request.POST.get('my_counselees')
 
         if usn:
-            student = Student.objects.filter(usn=usn)
-            if student:
-                student = Student.objects.filter(usn=usn)[0]
-                achievements = achievements.filter(holders=student)
-            else:
-                achievements = achievements.filter(id='ach')
+            student = Student.objects.filter(usn=usn).first()
+            achievements = achievements.filter(holders=student) if student else []
+        elif counselees:
+            students = Student.objects.filter(counselor=counselor)
+            achievements = achievements.filter(holders__in=students) if students else []
 
-        elif my_ments:
-            student = Student.objects.filter(counselor=counselor)
-            if student:
-                student = Student.objects.filter(counselor=counselor)[0]
-                achievements = achievements.filter(holders=student)
-            else:
-                achievements = achievements.filter(id='ach')
+        if achievement_type:
+            achievements = achievements.filter(type=achievement_type)
+            if not achievements.exists():
+                context['type_suggestions'] = get_suggestions('type', achievement_type)
 
-        if type:
-            achievements = achievements.filter(type=type)
-            if len(achievements) == 0:
-                sugs = get_suggestions('type', type)
-                if sugs:
-                    context['type_suggestions'] = sugs
-
-        if year:
-            achievements = achievements.filter(academic_year=year)
+        achievements = achievements.filter(academic_year=year) if year else achievements
 
         if organization:
-            org_obj = Organization.objects.filter(name=organization)
-            if org_obj:
-                org_obj = org_obj[0]
-                achievements = achievements.filter(organization=org_obj)
-            else:
-                achievements = achievements.filter(organization='ach')
-                sugs = get_suggestions('organization', organization)
-                if sugs:
-                    context['org_suggestions'] = sugs
+            org_obj = Organization.objects.filter(name=organization).first()
+            achievements = achievements.filter(organization=org_obj)
+            if not achievements.exists():
+                context['org_suggestions'] = get_suggestions('organization', organization)
 
-        if sortby:
-            achievements = achievements.order_by(sortby)
+        achievements = achievements.order_by(order) if order else achievements
 
-        context['usn'] = usn
-        context['year'] = year
-        context['type'] = type
-        context['org'] = organization
+        context.update({'usn': usn, 'year': year, 'achievement_type': achievement_type, 'org': organization})
 
-    links = []
-    for a in achievements:
-        link = 'file://' + str(a.certificate.file)
-        links.append(link)
-
+    links = [f"file://{str(achievement.certificate.file)}" for achievement in achievements]
     achievements_links = zip(achievements, links)
-    context['achievements'] = achievements
-    context['achievements_links'] = achievements_links
+    context.update({'achievements': achievements, "achievements_links": achievements_links})
 
     return render(request, "users/counselor_view.html", context)
 
 
 def student_view(request, user_obj):
     if request.method == 'POST':
-        return homeview.edit_achievement(request)
+        return home_views.edit_achievement(request)
 
     student = Student.objects.get(user=user_obj)
     achievements = student.achievements.all()
-    links = []
-    for a in achievements:
-        link = 'file://' + str(a.certificate.file)
-        links.append(link)
+    links = [f"file://{str(achievement.certificate.file)}" for achievement in achievements]
 
     achievements_links = zip(achievements, links)
     context = {
-        'name': user_obj.get_full_name(),
+        'name': student,
         'usn': student.usn,
         'counselor': student.counselor.id,
-        'user_type': 'Student',
+        'user_type': Student.type,
         'achievements': achievements,
         'achievements_links': achievements_links,
     }
     return render(request, "users/student_view.html", context)
 
 
-def get_suggestions(str, word):
-    if str == 'type':
-        corpus = type_corpus
-    elif str == 'organization':
-        corpus = org_corpus
+def get_suggestions(key, word):
+    corpus = []
+    if key == 'type':
+        corpus = list(Achievement.objects.values_list('type', flat=True).distinct())
+    elif key == 'organization':
+        corpus = list(Organization.objects.values_list('name', flat=True).distinct())
 
     mn = 10
     distances = []

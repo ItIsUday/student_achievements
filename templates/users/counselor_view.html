@@ -28,18 +28,18 @@
             {% csrf_token %}
             <div class="input-group">
                 <input name="usn" value="{{ usn }}" placeholder="USN" class="form-control" style="margin-left:300px;"/>
-                <input name="year" value="{{ year }}" placeholder="year" class="form-control"/>
-                <input name="type" value="{{ type }}" placeholder="type" class="form-control"/>
-                <input name="organization" value="{{ org }}" placeholder="organization" class="form-control"/>
-                <select name="sortby" class="form-control" style="max-width:10em;">
+                <input name="year" value="{{ year }}" placeholder="Year" class="form-control"/>
+                <input name="achievement_type" value="{{ achievement_type }}" placeholder="Type" class="form-control"/>
+                <input name="organization" value="{{ org }}" placeholder="Organization" class="form-control"/>
+                <select name="sort_by" class="form-control" style="max-width:10em;">
                     <option value="" disabled selected>Sort By</option>
                     <option value="achievement_date">Achievement Date</option>
                     <option value="title">Title</option>
                     <option value="type">Type</option>
                     <option value="organization">Organization</option>
                 </select>
-                <input type="checkbox" name="my_mentees" class="form-check-input"/>
-                <label for="my_mentees" class="form-check-label">My Mentees Only</label>
+                <input type="checkbox" name="my_counselees" class="form-check-input"/>
+                <label for="my_mentees" class="form-check-label">My Counselees Only</label>
             </div>
             <br>
             <button type="submit" class="btn btn-dark">Query</button>
