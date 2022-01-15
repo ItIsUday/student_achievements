@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.http import HttpResponseRedirect
+from django.http.response import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic import TemplateView, FormView
@@ -9,11 +10,15 @@ from nltk.metrics.distance import edit_distance
 from home import views as home_views
 from home.models import Achievement, Organization
 from users.models import Counselor, Student, User
+from home import views as homeview
+
+from nltk.metrics.distance import edit_distance
+type_corpus = list(Achievement.objects.values_list('type',flat=True).distinct())
+org_corpus = list(Organization.objects.values_list('name',flat=True).distinct())
 
 
 class SignUpView(TemplateView):
     template_name = 'users/registration/signup.html'
-
 
 def index(request):
     if not request.user.is_authenticated:
@@ -92,10 +97,7 @@ def counselor_view(request, user_obj):
 
         context.update({'usn': usn, 'year': year, 'achievement_type': achievement_type, 'org': organization})
 
-    links = [f"file://{str(achievement.certificate.file)}" for achievement in achievements]
-    achievements_links = zip(achievements, links)
-    context.update({'achievements': achievements, "achievements_links": achievements_links})
-
+    context.update({'achievements': achievements, "achievements_links": ziplinks(achievements)})
     return render(request, "users/counselor_view.html", context)
 
 
@@ -104,17 +106,14 @@ def student_view(request, user_obj):
         return home_views.edit_achievement(request)
 
     student = Student.objects.get(user=user_obj)
-    achievements = student.achievements.all()
-    links = [f"file://{str(achievement.certificate.file)}" for achievement in achievements]
-
-    achievements_links = zip(achievements, links)
+    achievements=student.achievements.all()
     context = {
         'name': student,
         'usn': student.usn,
         'counselor': student.counselor.id,
         'user_type': Student.type,
         'achievements': achievements,
-        'achievements_links': achievements_links,
+        'achievements_links':ziplinks(achievements),
     }
     return render(request, "users/student_view.html", context)
 
@@ -140,3 +139,25 @@ def get_suggestions(key, word):
             suggestions.append(cor)
 
     return suggestions
+
+def ziplinks(achievements):
+    links=[]
+    for a in achievements:
+        link='download?achid='+a.id
+        links.append(link)
+    
+    return zip(achievements,links)
+
+def usncomplete(request):
+    if 'term' in request.GET:
+        qs=Student.objects.filter(usn__icontains=request.GET.get('term')).order_by('usn')
+        usnlist=list(qs.values_list('usn',flat=True))
+        return JsonResponse(usnlist,safe=False)
+    return JsonResponse(None)
+
+def typecomplete(request):
+    if 'term' in request.GET:
+        qs=Achievement.objects.filter(type__icontains=request.GET.get('term'))
+        typelist=list(qs.values_list('type',flat=True).distinct())
+        return JsonResponse(typelist,safe=False)
+    return JsonResponse(None)

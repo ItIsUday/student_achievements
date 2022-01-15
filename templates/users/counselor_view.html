@@ -27,11 +27,11 @@
         <form method="post">
             {% csrf_token %}
             <div class="input-group">
-                <input name="usn" value="{{ usn }}" placeholder="USN" class="form-control" style="margin-left:300px;"/>
-                <input name="year" value="{{ year }}" placeholder="Year" class="form-control"/>
-                <input name="achievement_type" value="{{ achievement_type }}" placeholder="Type" class="form-control"/>
-                <input name="organization" value="{{ org }}" placeholder="Organization" class="form-control"/>
-                <select name="sort_by" class="form-control" style="max-width:10em;">
+                <input name="usn" id="usn" value="{{ usn }}" placeholder="USN" class="form-control" style="margin-left:300px;"/>
+                <input name="year" value="{{ year }}" placeholder="year" class="form-control" />
+                <input name="type" value="{{ type }}" placeholder="type" class="form-control" />
+                <input name="organization" value="{{ org }}" placeholder="organization" class="form-control" />
+                <select name="sortby" class="form-control" style="max-width:10em;">
                     <option value="" disabled selected>Sort By</option>
                     <option value="achievement_date">Achievement Date</option>
                     <option value="title">Title</option>
@@ -39,12 +39,20 @@
                     <option value="organization">Organization</option>
                 </select>
                 <input type="checkbox" name="my_counselees" class="form-check-input"/>
-                <label for="my_mentees" class="form-check-label">My Counselees Only</label>
+                <label for="my_counselees" class="form-check-label">My Counselees Only</label>
             </div>
             <br>
             <button type="submit" class="btn btn-dark">Query</button>
             <a href="{% url 'index' %}" class="btn btn-secondary">Clear Filters</a>
         </form>
+        <script>
+            $(
+                function() {
+                    $("#usn").autocomplete({source:"{% url 'usncomplete' %}"});
+                }
+            );
+        </script>
+
         <br><br>
         <h4>Count: {{ achievements.count }}</h4>
         {% if type_suggestions %}
@@ -74,26 +82,25 @@
             <div class="item">Certificate</div>
         </div>
 
-        {% for a,link in achievements_links %}
-            <div class="grid-container cols-counselor" style="margin-right: 5px;">
-                <div class="grid-item">{{ a.id }}</div>
-                <div class="grid-item">{{ a.title }}</div>
-                <div class="grid-item">
-                    {% if a.holders.all %}
-                        {% for h in a.holders.all %}
-                            {{ h }}<br>
-                        {% endfor %}
-                    {% else %}
-                        <p style="color: #aaa;">No members</p>
-                    {% endif %}
-                </div>
-                <div class="grid-item">{{ a.achievement_date }}</div>
-                <div class="grid-item">{{ a.type }}</div>
-                <div class="grid-item">{{ a.academic_year }}</div>
-                <div class="grid-item">{{ a.organization.name }}</div>
-                <div class="grid-item">
-                    <a href="{{ a.certificate.url }}">link</a>
-                </div>
+    {% for a,link in achievements_links %}
+        <div class="grid-container cols-counselor" style="margin-right: 5px;">
+            <div class="grid-item">{{ a.id }}</div>
+            <div class="grid-item">{{ a.title }}</div>
+            <div class="grid-item">
+                {% if a.holders.all %}
+                {% for h in a.holders.all %}
+                    {{ h }}<br>
+                {% endfor %}
+                {% else %}
+                <p style="color: #aaa;">No members</p>
+                {% endif %}
+            </div>
+            <div class="grid-item">{{ a.achievement_date }}</div>
+            <div class="grid-item">{{ a.type }}</div>
+            <div class="grid-item">{{ a.academic_year }}</div>
+            <div class="grid-item">{{ a.organization.name }}</div>  
+            <div class="grid-item">
+                <a href="{{ link }}" class="btn-outline-dark btn-sm">download</a>
             </div>
         {% endfor %}
     {% else %}
