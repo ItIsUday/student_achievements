@@ -4,27 +4,29 @@
     <style>
         input, select {
             max-width: 10em;
-            margin-right: 9px;
+            margin-right: 20px;
         }
     </style>
-    <div style="text-align: center;">
-        <h3>Student Achievement Portal<br><br></h3>
+    <h2 style="text-align:center;">Student Achievement Portal</h2><br>
+    <div class="grid-item" style="margin-right:5px;">
         <table class="table table-striped table-bordered">
             <tr>
-                <td><h4>Name: {{ name }}</h4></td>
+                <td><h4>Name: {{ request.user.get_full_name }}</h4></td>
                 <td><h4>ID: {{ id }}</h4></td>
                 <td><h4>User: {{ user_type }}</h4></td>
             </tr>
             <tr>
                 <td><h5>Username: {{ request.user.username }}</h5></td>
                 <td><h5>Email: {{ request.user.email }}</h5></td>
-                <td><a href="{% url 'logout' %}" class="btn btn-outline-danger">Log Out</a></td>
+                <td>
+                    <a href="{% url 'my_counselees' %}" class="btn btn-warning">My Counselees</a>
+                    <a href="{% url 'logout' %}" class="btn btn-outline-danger">Log Out</a>
+                </td>
             </tr>
         </table>
         <br><br><br>
-
-        <h2>Student Achievements</h2><br>
-        <form method="post">
+        <h3>Student Achievements</h3>
+        <form method="post" class="container grid-item">
             {% csrf_token %}
             <div class="input-group">
                 <input name="usn" id="usn" value="{{ usn }}" placeholder="USN" class="form-control"

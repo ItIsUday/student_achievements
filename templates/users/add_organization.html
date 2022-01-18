@@ -19,8 +19,13 @@
             <button type="submit" class="btn btn-warning">Save</button>
             <a href="{% url 'add_achievement' %}" class="btn btn-secondary">Go Back</a>
         </form>
-        <br>
-
-        <br><br>
+        <script>
+            $(
+                function () {
+                    $("#type").autocomplete({source: "{% url 'organization_type_complete' %}"});
+                }
+            );
+        </script>
+        <br><br><br>
     </div>
 {% endblock %}

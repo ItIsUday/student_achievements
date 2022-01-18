@@ -13,7 +13,7 @@ class AchievementForm(ModelForm):
     )
     type = forms.CharField(
         max_length=20,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Achievement Type'})
+        widget=forms.TextInput(attrs={'id': 'type', 'class': 'form-control', 'placeholder': 'Achievement Type'})
     )
     academic_year = forms.IntegerField(
         min_value=2010,
@@ -57,7 +57,7 @@ class OrganizationForm(ModelForm):
     )
     type = forms.CharField(
         max_length=20,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Organization Type'})
+        widget=forms.TextInput(attrs={'id': 'type', 'class': 'form-control', 'placeholder': 'Organization Type'})
     )
 
     class Meta:

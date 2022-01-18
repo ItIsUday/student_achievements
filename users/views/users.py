@@ -56,7 +56,6 @@ def counselor_view(request, user_obj):
     achievements = Achievement.objects.all()
     counselor = Counselor.objects.get(user=user_obj)
     context = {
-        'name': counselor,
         'id': counselor.id,
         'user_type': Counselor.type,
     }
@@ -98,6 +97,22 @@ def counselor_view(request, user_obj):
     return render(request, "users/counselor_view.html", context)
 
 
+def my_counselees(request):
+    if not request.user.is_authenticated:
+        return render(request, "users/logout.html", {'message': 'You must be signed in.'})
+    if not request.user.is_counselor:
+        return render(request, "users/add_achievement.html",
+                      {'message': 'Only Counselors are Authorized to this page.'})
+
+    me = Counselor.objects.get(user=request.user)
+    students = Student.objects.filter(counselor=me).order_by('usn')
+    context = {
+        'id': me.id,
+        'students': students,
+    }
+    return render(request, "users/my_counselees.html", context)
+
+
 def student_view(request, user_obj):
     if request.method == 'POST':
         return home_views.edit_achievement(request)
@@ -106,7 +121,6 @@ def student_view(request, user_obj):
     achievements = student.achievements.all()
 
     context = {
-        'name': student,
         'usn': student.usn,
         'counselor': student.counselor.id,
         'user_type': Student.type,
@@ -152,9 +166,17 @@ def usn_complete(request):
     return JsonResponse(None)
 
 
-def type_complete(request):
+def achievement_type_complete(request):
     if 'term' in request.GET:
         qs = Achievement.objects.filter(type__icontains=request.GET.get('term'))
         type_list = list(qs.values_list('type', flat=True).distinct())
         return JsonResponse(type_list, safe=False)
+    return JsonResponse(None)
+
+
+def organization_type_complete(request):
+    if 'term' in request.GET:
+        qs = Organization.objects.filter(type__icontains=request.GET.get('term'))
+        typelist = list(qs.values_list('type', flat=True).distinct())
+        return JsonResponse(typelist, safe=False)
     return JsonResponse(None)

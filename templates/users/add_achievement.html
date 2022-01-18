@@ -10,8 +10,10 @@
     </style>
     <div style="margin-left:20px;">
         {% if message %}
-            <h2>{{ message }}</h2>
-            <a href="{% url 'index' %}" class="btn btn-secondary">Home</a>
+            <div class="container grid-item">
+                <h2>{{ message }}</h2>
+                <a href="{% url 'index' %}" class="btn btn-secondary">Home</a>
+            </div>
         {% else %}
             <h2>Enter Achievement Details</h2>
             <a href="{% url 'add_organization' %}" class="btn btn-outline-danger">Add New Organization</a>
@@ -19,14 +21,13 @@
                 {% csrf_token %}
                 {{ form|crispy }}
                 <input type="hidden" name="ach_id" value="{{ ach_id }}"><br>
-                <input type="hidden" name="next" value="{{ next }}"><br>
                 <button type="submit" class="btn btn-warning">Save</button>
                 <a href="{% url 'index' %}" class="btn btn-secondary">Go Back</a>
             </form>
             <script>
                 $(
                     function () {
-                        $("#type").autocomplete({source: "{% url 'type_complete' %}"});
+                        $("#type").autocomplete({source: "{% url 'achievement_type_complete' %}"});
                     }
                 );
             </script>
