@@ -1,7 +1,7 @@
 from django.urls import path
 
+from home import views as home_view
 from .views import counselors, students, users
-from home import views as homeview
 
 urlpatterns = [
     path("", users.index, name="index"),
@@ -10,9 +10,9 @@ urlpatterns = [
     path("signup", users.SignUpView.as_view(), name="signup"),
     path("signup/student/", students.StudentSignUpView.as_view(), name="student_signup"),
     path('signup/counselor/', counselors.CounselorSignUpView.as_view(), name="counselor_signup"),
-    path('add-achievement/', homeview.add_achievement, name="add_achievement"),
-    path('add-organization/',homeview.add_org,name="add_organization"),
-    path('download',homeview.download_certificate,name="download_certificate"),
-    path('usncomplete',users.usncomplete,name="usncomplete"),
-    path('typecomplete',users.typecomplete,name="typecomplete"),
+    path('add-achievement/', home_view.add_achievement, name="add_achievement"),
+    path('add-organization/', home_view.add_org, name="add_organization"),
+    path('download', home_view.download_certificate, name="download_certificate"),
+    path('usn_complete', users.usn_complete, name="usn_complete"),
+    path('type_complete', users.type_complete, name="type_complete"),
 ]

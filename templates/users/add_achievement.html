@@ -3,9 +3,9 @@
 
 {% block body %}
     <style>
-        label{
-            margin-top:15px;
-            font-weight:bold;
+        label {
+            margin-top: 15px;
+            font-weight: bold;
         }
     </style>
     <div style="margin-left:20px;">
@@ -25,14 +25,14 @@
             </form>
             <script>
                 $(
-                    function() {
-                        $("#type").autocomplete({source:"{% url 'typecomplete' %}"});
+                    function () {
+                        $("#type").autocomplete({source: "{% url 'type_complete' %}"});
                     }
                 );
             </script>
         {% endif %}
         <br>
-        
+
         <br><br>
     </div>
 {% endblock %}
