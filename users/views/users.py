@@ -1,5 +1,7 @@
+import plotly.graph_objects as go
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
+from django.db.models import Count
 from django.http import HttpResponseRedirect
 from django.http.response import JsonResponse
 from django.shortcuts import render
@@ -92,7 +94,8 @@ def counselor_view(request, user_obj):
 
         context.update({'usn': usn, 'year': year, 'achievement_type': achievement_type, 'org': organization})
 
-    context.update({'achievements': achievements, "achievements_links": zip_links(achievements)})
+    chart = Chart.achievement_count_per_type()
+    context.update({'achievements': achievements, "achievements_links": zip_links(achievements), "fig": chart})
 
     return render(request, "users/counselor_view.html", context)
 
@@ -100,8 +103,8 @@ def counselor_view(request, user_obj):
 def my_counselees(request):
     if not request.user.is_authenticated:
         return render(request, "users/logout.html", {'message': 'You must be signed in.'})
-    if not request.user.is_counselor:
-        return render(request, "users/add_achievement.html",
+    if not User.objects.get(username=request.user.username).is_counselor:
+        return render(request, "users/my_counselees.html",
                       {'message': 'Only Counselors are Authorized to this page.'})
 
     me = Counselor.objects.get(user=request.user)
@@ -177,6 +180,36 @@ def achievement_type_complete(request):
 def organization_type_complete(request):
     if 'term' in request.GET:
         qs = Organization.objects.filter(type__icontains=request.GET.get('term'))
-        typelist = list(qs.values_list('type', flat=True).distinct())
-        return JsonResponse(typelist, safe=False)
+        type_list = list(qs.values_list('type', flat=True).distinct())
+        return JsonResponse(type_list, safe=False)
     return JsonResponse(None)
+
+
+class Chart:
+
+    @staticmethod
+    def achievement_count_per_student():
+        students = Student.objects.all().order_by("usn")
+        labels = [str(student) for student in students]
+        values = [student.achievements.count() for student in students]
+        chart = go.Figure(data=[go.Pie(labels=labels, values=values, hole=0.3)])
+        return chart.to_html()
+
+    @staticmethod
+    def achievement_count_per_year():
+        achievements = Achievement.objects.values("academic_year").annotate(count=Count('academic_year'))
+        labels = [achievement["academic_year"] for achievement in achievements]
+        values = [achievement["count"] for achievement in achievements]
+        chart = go.Figure(data=[go.Bar(x=labels, y=values)])
+        chart.update_yaxes(title_text="Achievements Count", dtick=1)
+        chart.update_xaxes(title_text="Academic Year", range=[2010, 2022], dtick=1)
+        return chart.to_html()
+
+    @staticmethod
+    def achievement_count_per_type():
+        achievements = Achievement.objects.values("type").annotate(count=Count("type"))
+        labels = [achievement["type"] for achievement in achievements]
+        values = [achievement["count"] for achievement in achievements]
+        chart = go.Figure(data=[go.Pie(labels=labels, values=values, title="Achievements Types")])
+        chart.update_traces(textposition='inside', textinfo='percent+label')
+        return chart.to_html()
