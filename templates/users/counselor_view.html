@@ -29,8 +29,7 @@
         <form method="post" class="container grid-item">
             {% csrf_token %}
             <div class="input-group">
-                <input name="usn" id="usn" value="{{ usn }}" placeholder="USN" class="form-control"
-                       style="margin-left:300px;"/>
+                <input name="usn" id="usn" value="{{ usn }}" placeholder="USN" class="form-control"/>
                 <input name="year" value="{{ year }}" placeholder="Year" class="form-control"/>
                 <input name="achievement_type" value="{{ achievement_type }}" placeholder="Type" class="form-control"/>
                 <input name="organization" value="{{ org }}" placeholder="Organization" class="form-control"/>
@@ -113,8 +112,27 @@
     {% endif %}
 
     <br><br>
-    <div style="max-width: 600px; margin: auto; border: 3px solid #ff5050;">
-        {{ fig|safe }}
+
+    <div class="row">
+        <div class="column" style="max-width: 600px; margin: auto; border: 3px solid #f55;">
+            {{ fig1|safe }}
+        </div>
+        <div class="column" style="max-width: 600px; margin: auto; border: 3px solid #f55;">
+            {{ fig2|safe }}
+        </div>
     </div>
+    <br>
+    <div class="row">
+        <div class="column" style="max-width: 600px; margin: auto; border: 3px solid #f55;">
+            {{ fig3|safe }}
+        </div>
+        <div class="column" style="max-width: 600px; margin: auto; border: 3px solid #f55;">
+            {{ fig4|safe }}
+        </div>
+    </div>
+
+    {% comment %} <div style="max-width: 600px; margin: auto; border: 3px solid #ff5050;">
+        {{ fig|safe }}
+    </div> {% endcomment %}
     <br><br>
 {% endblock %}
