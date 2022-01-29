@@ -19,7 +19,7 @@ class StudentSignUpForm(UserCreationForm):
     )
     phone = forms.CharField(
         max_length=10,
-        validators=[RegexValidator('\d{10}', message='Invalid Phone Number')],
+        validators=[RegexValidator('[6-9]\d{9}', message='Invalid Phone Number')],
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number (IN)'}),
     )
     birth_date = forms.DateField(
@@ -67,7 +67,7 @@ class CounselorSignUpForm(UserCreationForm):
     )
     phone = forms.CharField(
         max_length=10,
-        validators=[RegexValidator('\d{10}', message='Invalid Phone Number')],
+        validators=[RegexValidator('[6-9]\d{9}', message='Invalid Phone Number')],
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number (IN)'}),
     )
 

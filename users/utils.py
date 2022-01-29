@@ -36,6 +36,15 @@ class Chart:
         chart.update_traces(textposition='inside', textinfo='percent+label')
         return chart.to_html()
 
+    @staticmethod
+    def achievement_count_per_organization():
+        achievements = Achievement.objects.values("organization").annotate(count=Count("organization"))
+        labels = [organization["name"] for organization in Organization.objects.values("name")]
+        values = [achievement["count"] for achievement in achievements]
+        chart = go.Figure(data=[go.Pie(labels=labels, values=values, title="Awarding Organizations")])
+        chart.update_traces(textposition='inside', textinfo='percent+label')
+        return chart.to_html()
+
 
 def get_suggestions(key, word):
     corpus = []

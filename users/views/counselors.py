@@ -64,8 +64,12 @@ def counselor_view(request, user_obj):
 
         context.update({'usn': usn, 'year': year, 'achievement_type': achievement_type, 'org': organization})
 
-    chart = Chart.achievement_count_per_type()
-    context.update({'achievements': achievements, "achievements_links": zip_links(achievements), "fig": chart})
+    chart1 = Chart.achievement_count_per_type()
+    chart2 = Chart.achievement_count_per_year()
+    chart3 = Chart.achievement_count_per_organization()
+    chart4 = Chart.achievement_count_per_student()
+    context.update({'achievements': achievements, "achievements_links": zip_links(achievements),
+             "fig1": chart1, "fig2": chart2, "fig3": chart3, "fig4": chart4})
 
     return render(request, "users/counselor_view.html", context)
 
